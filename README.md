@@ -1,2 +1,2 @@
 # cinema-booking-system-test
-Coding assignment for a job interview
+Coding assignment for a test

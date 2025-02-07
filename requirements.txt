@@ -1,0 +1,3 @@
+-e git+https://github.com/Lohenl/cinema-booking-system-test.git@524dd179e794994763f83248f555cb0501dcac71#egg=sample
+setuptools==75.8.0
+simple-term-menu==1.6.6
