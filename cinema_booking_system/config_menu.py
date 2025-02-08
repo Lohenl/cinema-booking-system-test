@@ -50,7 +50,7 @@ class ConfigMenu:
         self.completer = WordCompleter(self.options, ignore_case=True)
         self.validator = ConfigMenuValidator()
 
-    def display_menu(self):
+    def prompt_config(self):
         user_input = prompt(
             "Please define movie title and seating map in [Title] [Row] [Seats Per Row] format.\n",
             completer = self.completer,
@@ -60,7 +60,7 @@ class ConfigMenu:
     
     def run(self):
         while True:
-            user_input = self.display_menu()
+            user_input = self.prompt_config()
             print(f"User input: {user_input}")
             if user_input.lower() == "exit":
                 print("Exiting Configuration Menu\n")

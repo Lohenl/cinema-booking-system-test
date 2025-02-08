@@ -37,5 +37,13 @@ class Screening:
     def movie(self, value):
         self._movie = value
     
+    @property
+    def booking_data(self) -> List[Booking]:
+        return self._booking_data
+    
+    @booking_data.setter
+    def booking_data(self, value):
+        self._booking_data = value
+    
     def __str__(self):
         return f"Screening: {self.start_time}, {self.movie}, {self.seat_config}"

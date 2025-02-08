@@ -16,7 +16,7 @@ if __name__ == "__main__":
     
     # run the initial config menu
     config_menu = ConfigMenu()
-    user_input = config_menu.display_menu()
+    user_input = config_menu.prompt_config()
     
     if user_input.lower() == "exit":
         print("Exiting Configuration Menu\n")

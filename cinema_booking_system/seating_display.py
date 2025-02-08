@@ -5,6 +5,7 @@ from cinema_booking_system.booking import Booking
 class SeatingDisplay:
     def __init__(self, seating_config: SeatingConfig, booking_data: List[Booking]):
         self.seating_config = seating_config
+        self.booking_data = booking_data
 
     @property
     def seat_config(self) -> SeatingConfig:
@@ -14,7 +15,15 @@ class SeatingDisplay:
     def seat_config(self, value):
         self._seat_config = value
     
-    def display_seating(self):
+    @property
+    def booking_data(self) -> List[Booking]:
+        return self._booking_data
+    
+    @booking_data.setter
+    def booking_data(self, value):
+        self._booking_data = value
+    
+    def display(self):
         # Calculate the total length of the HR line
         hr_length = self.seating_config.seat_count_per_row * 3 + 1
         
@@ -50,9 +59,9 @@ class SeatingDisplay:
         print(last_row)
         
         # print the legend
-        print("\n. - Available seat | o - Booked seat\n")
+        print("\no - Selected seat | . - Available seat |  x - Unavailable seat  \n")
 
 # Example usage:
 if __name__ == "__main__":
     seating_display = SeatingDisplay(SeatingConfig(26, 20), [])
-    seating_display.display_seating()
+    seating_display.display()
