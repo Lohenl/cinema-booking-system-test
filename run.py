@@ -1,15 +1,5 @@
 from cinema_booking_system import Movie, Screening, Booking, SeatingConfig, BookingMenu, ConfigMenu
 from datetime import datetime
-# from typing import List
-
-# Create some example data
-# movies: List[Movie] = []
-movie = Movie("Inception")
-# movies.append(movie)
-
-seating_config = SeatingConfig(10, 20)
-# screening = Screening(movie, datetime(2025, 2, 8, 19, 30))
-# booking = Booking(user, screening, 2)
 
 # Check whether the script is being run directly or being imported as a module
 if __name__ == "__main__":

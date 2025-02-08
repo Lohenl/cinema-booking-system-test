@@ -94,6 +94,29 @@ class BookingMenu:
         )
         return user_input
 
+    def select_seats_from_position(self, row: str, seat: int, seat_count: int) -> List[str]:
+        selected_seats: List[str] = []
+        
+        # Determine remaining seats from the rear row and center column
+        center_column = self.screening.seat_config.seat_count_per_row // 2
+        for i in range(seat_count):
+            row = chr(ord(row) + (i // self.screening.seat_config.seat_count_per_row))
+            column_offset = (i + 1) // 2 * (-1 if i % 2 == 0 else 1)
+            seat = center_column + column_offset + 1
+            selected_seats.append(f"{row}{seat}")
+            
+        return selected_seats
+    
+    def determine_seat_position(self, seat_count: int) -> List[str]:
+        selected_seats: List[str] = []
+        for i in range(seat_count):
+            row = chr(ord('A') + (self.screening.seat_config.row_count - 1) - (i // self.screening.seat_config.seat_count_per_row))
+            seat = (i % self.screening.seat_config.seat_count_per_row) + 1
+            selected_seats.append(f"{row}{seat}")
+                            
+            selected_seats.append(f"{row}{seat}")
+        return selected_seats
+
     def run(self):
         while True:
             menu_choice = self.display_menu()
@@ -118,22 +141,21 @@ class BookingMenu:
                         # Prompt user to select seats
                         while True:
                             # Determine the default seat selection - rear and center
-                            selected_seats: List[str] = []
-                            for i in range(int(input_seats)):
-                                row = chr(ord('A') + (self.screening.seat_config.row_count - 1) - (i // self.screening.seat_config.seat_count_per_row))
-                                seat = (i % self.screening.seat_config.seat_count_per_row) + 1
-                                selected_seats.append(f"{row}{seat}")
+                            selected_seats = self.determine_seat_position(seat_count)
+                            # selected_seats = self.select_seats_from_position(seat_count)
                             
                             # Display seating
                             print(f"Selected Seats: {selected_seats}\n")
                             self.seating_display.display(selected_seats)
-                            seat = self.prompt_seat_position()
-                            if seat.lower() == "confirm":
+                            seat_input = self.prompt_seat_position()
+                            if seat_input.lower() == "confirm":
                                 break
-                            # booking.seats.append(seat)
+                        
+                        # Add selected seats to booking
+                        booking.seats = selected_seats
                         
                         # Add booking to screening when booking is successful
-                        # self.screening.booking_data.append(booking)
+                        self.screening.booking_data.append(booking)
                         # TODO: Construct and perform database transactions here
                         
                     else:
