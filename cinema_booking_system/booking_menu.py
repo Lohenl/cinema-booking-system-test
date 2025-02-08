@@ -1,4 +1,5 @@
 import re
+from typing import List
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.validation import Validator, ValidationError
@@ -88,35 +89,43 @@ class BookingMenu:
     
     def prompt_seat_position(self):
         user_input = prompt(
-            f"\nPlease select a seating position (e.g. A1, B2, C3), or enter 'confirm' to accept seat selection\nSeat:",
+            f"\nEnter 'confirm' to accept seat selection, or select a seating position (e.g. A1, B2, C3)\nSeat: ",
             validator = self.validator
         )
         return user_input
 
     def run(self):
         while True:
-            choice = self.display_menu()
-            match choice:
+            menu_choice = self.display_menu()
+            match menu_choice:
                 case "1":
                     # Prompt user for number of seats
                     input_seats = self.prompt_seat_count()
                     if input_seats.isdigit() and 1 <= int(input_seats) <= self.seats_available:
+                        
                         # Reserve number of seats
-                        print(f"\nBooking {input_seats} seats for {self.screening.movie.title}...")
+                        seat_count = int(input_seats)
+                        print(f"\nBooking {seat_count} seats for {self.screening.movie.title}...")
                         # TODO: Build client integration with backend for seat reservation here
                         
                         # Create a booking object and generate an id
-                        id = "GIC" + str(len(self.screening.booking_data) + 1).zfill(4) # should be date + uuid in practice
-                        booking = Booking(id, self.screening, int(input_seats))
+                        new_id = "GIC" + str(len(self.screening.booking_data) + 1).zfill(4) # should be date + uuid in practice
+                        booking = Booking(new_id, [])
                         
-                        self.seats_available -= int(input_seats) # eh lets upgrade this later
-                        print(f"\nSuccessfully reserved {input_seats} seats for {self.screening.movie.title} at {self.screening.start_time}.")
-                        print(f"Booking ID: {id} \n")
+                        self.seats_available -= int(input_seats) # TODO: eh lets upgrade this later
+                        print(f"\nSuccessfully reserved {input_seats} seats for {self.screening.movie.title} at {self.screening.start_time}.\nBooking ID: {new_id} \n")
                         
                         # Prompt user to select seats
                         while True:
+                            # Determine the default seat selection - rear and center
+                            selected_seats: List[str] = []
+                            for i in range(int(input_seats)):
+                                row = chr(ord('A') + i // self.screening.seat_config.seat_count_per_row)
+                                seat = (i % self.screening.seat_config.seat_count_per_row) + 1
+                                selected_seats.append(f"{row}{seat}")
+                            
                             # Display seating
-                            print("Selected Seats: \n")
+                            print(f"Selected Seats: {selected_seats}\n")
                             self.seating_display.display()
                             seat = self.prompt_seat_position()
                             if seat.lower() == "confirm":
