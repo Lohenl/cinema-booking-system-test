@@ -18,11 +18,11 @@ class BookingMenuValidator(Validator):
         text = document.text.strip()
         if not text:
             raise ValidationError(
-                message="Input cannot be empty. \nPlease select a seating position (e.g. A1, B2, C3), or enter 'confirm' to accept seat selection",
+                message="Input cannot be empty. \nPlease select a seating position (e.g. A1, B2, C3), or enter 'confirm' to accept seat selection, or 'cancel' to cancel booking.",
                 cursor_position=len(text)  # Move cursor to the end
             )
         
-        if text.lower() != 'confirm' or text.lower() != 'cancel':
+        if text.lower() != 'confirm' and text.lower() != 'cancel':
             if not re.match(r'^[A-Za-z]\d+$', text):
                 raise ValidationError(
                     message="Invalid format. Please select a seating position (e.g. A1, B2, C3).",
@@ -88,7 +88,7 @@ class BookingMenu:
     
     def prompt_seat_position(self):
         user_input = prompt(
-            f"\nEnter 'confirm' to accept seat selection, or select a seating position (e.g. A1, B2, C3)\nSeat: ",
+            f"\nEnter 'confirm' to accept seat selection, or select a seating position (e.g. A1, B2, C3), or enter 'cancel' to cancel booking:\nSeat: ",
             validator = self.validator
         )
         return user_input
@@ -154,16 +154,16 @@ class BookingMenu:
                             self.seating_display.display(selected_seats)
                             seat_input = self.prompt_seat_position()
                             if seat_input.lower() == "confirm":
+                                # Add booking to screening when booking is successful
+                                # TODO: Update models and perform database transactions here
+                                booking.seats = selected_seats
+                                self.screening.booking_data.append(booking)
+                                print(f"\nBooking confirmed! Booking ID: {new_id} Seats: {selected_seats}\n")
                                 break
                             elif seat_input.lower() == "cancel":
+                                self.seats_available += seat_count
                                 print("\nCancelling booking...")
                                 break
-                        
-                        # Add booking to screening when booking is successful
-                        # TODO: Update models and perform database transactions here
-                        booking.seats = selected_seats
-                        self.screening.booking_data.append(booking)
-                        print(f"\nBooking confirmed! Seats: {selected_seats}\n")
                         
                     else:
                         print(f"\nSorry, there are only {self.seats_available} seats available. Please try again.")
@@ -188,6 +188,7 @@ class BookingMenu:
                 case "3":
                     print("\nThank you for using GIC Cinemas System. Bye!")
                     break
+                
                 case _:
                     print("\nInvalid choice, please try again.")
                     

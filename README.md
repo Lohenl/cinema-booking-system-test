@@ -17,5 +17,5 @@ pip install -r requirements.txt
 - [ ] Custom seat selection
 - [ ] Seat Filling algorithm
 
-- [ ] Save booking
-- [ ] Check booking
+- [x] Save booking
+- [x] Check booking
