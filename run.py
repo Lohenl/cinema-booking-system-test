@@ -24,11 +24,11 @@ if __name__ == "__main__":
         print(f"Configured: {user_input}")
         parts = user_input.split()
         title = parts[0]
-        row_count = parts[1]
-        seat_count_per_row = parts[2]
+        row_count = int(parts[1])
+        seat_count_per_row = int(parts[2])
         movie = Movie(title)
         seating_config = SeatingConfig(row_count, seat_count_per_row)
-        screening = Screening(movie, datetime.now(), seating_config)
+        screening = Screening(datetime.now(), seating_config, movie, [], [])
     
     # run the booking menu
     menu = BookingMenu(screening)
