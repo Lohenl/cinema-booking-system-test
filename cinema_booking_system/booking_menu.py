@@ -23,7 +23,7 @@ class BookingMenuValidator(Validator):
                 cursor_position=len(text)  # Move cursor to the end
             )
         
-        if text.lower() != 'confirm':
+        if text.lower() != 'confirm' or text.lower() != 'cancel':
             if not re.match(r'^[A-Za-z]\d+$', text):
                 raise ValidationError(
                     message="Invalid format. Please select a seating position (e.g. A1, B2, C3).",
@@ -94,7 +94,7 @@ class BookingMenu:
         )
         return user_input
 
-    def select_seats_from_position(self, row: str, seat: int, seat_count: int) -> List[str]:
+    def determine_seats_from_position(self, row: str, seat: int, seat_count: int) -> List[str]:
         selected_seats: List[str] = []
         
         # Determine remaining seats from the rear row and center column
@@ -107,7 +107,7 @@ class BookingMenu:
             
         return selected_seats
     
-    def determine_seat_position(self, seat_count: int) -> List[str]:
+    def predetermine_seats(self, seat_count: int) -> List[str]:
         selected_seats: List[str] = []
         for i in range(seat_count):
             row = chr(ord('A') + (self.screening.seat_config.row_count - 1) - (i // self.screening.seat_config.seat_count_per_row))
@@ -139,16 +139,25 @@ class BookingMenu:
                         print(f"\nSuccessfully reserved {input_seats} seats for {self.screening.movie.title} at {self.screening.start_time}.\nBooking ID: {new_id} \n")
                         
                         # Prompt user to select seats
+                        selected_seats = None
+                        seat_input = None
                         while True:
-                            # Determine the default seat selection - rear and center
-                            selected_seats = self.determine_seat_position(seat_count)
-                            # selected_seats = self.select_seats_from_position(seat_count)
+                            
+                            if selected_seats is None:
+                                # Determine the default seat selection - rear and center
+                                selected_seats = self.predetermine_seats(seat_count)
+                            else:
+                                # Determine the seat selection based on user input
+                                selected_seats = self.determine_seats_from_position(seat_input)
                             
                             # Display seating
                             print(f"Selected Seats: {selected_seats}\n")
                             self.seating_display.display(selected_seats)
                             seat_input = self.prompt_seat_position()
                             if seat_input.lower() == "confirm":
+                                break
+                            elif seat_input.lower() == "cancel":
+                                print("\nCancelling booking...")
                                 break
                         
                         # Add selected seats to booking
