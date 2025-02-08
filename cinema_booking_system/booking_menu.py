@@ -120,13 +120,13 @@ class BookingMenu:
                             # Determine the default seat selection - rear and center
                             selected_seats: List[str] = []
                             for i in range(int(input_seats)):
-                                row = chr(ord('A') + i // self.screening.seat_config.seat_count_per_row)
+                                row = chr(ord('A') + (self.screening.seat_config.row_count - 1) - (i // self.screening.seat_config.seat_count_per_row))
                                 seat = (i % self.screening.seat_config.seat_count_per_row) + 1
                                 selected_seats.append(f"{row}{seat}")
                             
                             # Display seating
                             print(f"Selected Seats: {selected_seats}\n")
-                            self.seating_display.display()
+                            self.seating_display.display(selected_seats)
                             seat = self.prompt_seat_position()
                             if seat.lower() == "confirm":
                                 break
