@@ -15,7 +15,7 @@ pip install -r requirements.txt
 
 - [x] Save booking
 - [x] Check booking
-- [ ] Set Unavailable Seating
-- [ ] Display Unavailable Seating
+- [x] Set Unavailable Seating
+- [x] Display Unavailable Seating
 - [ ] Default placement + Custom Placement
 - [ ] Seat selection algorithm
