@@ -1,18 +1,23 @@
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 from cinema_booking_system.movie import Movie
+from cinema_booking_system.screening import Screening
 
 class BookingMenu:
-    def __init__(self, movie: Movie):
-        self.movie = movie
+    def __init__(self, screening: Screening):
+        self.screening = screening
         self.options = ["1", "2", "3"]
         self.completer = WordCompleter(self.options, ignore_case=True)
-
+        self.total_seats = screening.seat_config.row_count * screening.seat_config.seat_count_per_row
+        
+        self.seats_available = self.total_seats
+        # self.seats_available = self.total_seats - len(screening.booking_data)
+        
     def display_menu(self):
         user_input = prompt(
             "\n"
             "Welcome to GIC Cinemas\n"
-            f"[1] Book Tickets for '{Movie.title}' (64 seats available)\n"
+            f"[1] Book Tickets for '{self.screening.movie.title}' ({self.seats_available} seats available)\n"
             "[2] Check Bookings\n"
             "[3] Exit\n"
             "\n"

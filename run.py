@@ -28,7 +28,8 @@ if __name__ == "__main__":
         seat_count_per_row = parts[2]
         movie = Movie(title)
         seating_config = SeatingConfig(row_count, seat_count_per_row)
+        screening = Screening(movie, datetime.now(), seating_config)
     
     # run the booking menu
-    menu = BookingMenu(movie, seating_config)
+    menu = BookingMenu(screening)
     menu.run()

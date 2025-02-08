@@ -6,15 +6,15 @@ from cinema_booking_system.booking import Booking
 from cinema_booking_system.seating import Seating
 
 class Screening:
-    def __init__(self, start_time, seat_config: SeatingConfig, movie: Movie, seating_data:List[Seating], booking_data: List[Booking] = []):
+    def __init__(self, start_time: datetime, seat_config: SeatingConfig, movie: Movie, seating_data:List[Seating], booking_data: List[Booking]):
         self.start_time = start_time
         self.seat_config = seat_config
         self.movie = movie
-        self.seating_data = seating_data
-        self.booking_data = booking_data
+        self._seating_data = seating_data if seating_data is not None else []
+        self._booking_data = booking_data if booking_data is not None else []
 
     @property
-    def start_time(self):
+    def start_time(self) -> datetime:
         return self._start_time
     
     @start_time.setter
@@ -22,7 +22,7 @@ class Screening:
         self._start_time = value
     
     @property
-    def seat_config(self):
+    def seat_config(self) -> SeatingConfig:
         return self._seat_config
     
     @seat_config.setter
@@ -30,7 +30,7 @@ class Screening:
         self._seat_config = value
     
     @property
-    def movie(self):
+    def movie(self) -> Movie:
         return self._movie
     
     @movie.setter
@@ -38,4 +38,4 @@ class Screening:
         self._movie = value
     
     def __str__(self):
-        return f"{self.movie.title} at {self.start_time}"
+        return f"Screening: {self.start_time}, {self.movie}, {self.seat_config}"

@@ -5,7 +5,7 @@ class Movie:
         # self.rating = rating
         
     @property
-    def title(self):
+    def title(self) -> str:
         return self._title
     
     @title.setter
@@ -29,4 +29,4 @@ class Movie:
     #     self._rating = value
 
     def __str__(self):
-        return f"{self.title} ({self.duration} mins, {self.rating})"
+        return f"Movie: {self.title}"
