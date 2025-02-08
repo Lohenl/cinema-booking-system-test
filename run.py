@@ -1,4 +1,4 @@
-from cinema_booking_system import Movie, Screening, Booking, SeatingConfig, BookingMenu, ConfigMenu
+from cinema_booking_system import Movie, Screening, SeatingConfig, BookingMenu, ConfigMenu
 from datetime import datetime
 
 # Check whether the script is being run directly or being imported as a module
@@ -21,5 +21,5 @@ if __name__ == "__main__":
         screening = Screening(datetime.now(), seating_config, movie, [], [])
     
     # run the booking menu
-    menu = BookingMenu(screening)
+    menu = BookingMenu(screening) # normally screening details would be pulled from a database
     menu.run()
