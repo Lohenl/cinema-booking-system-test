@@ -1,8 +1,13 @@
 from typing import List, Tuple
 from cinema_booking_system.seating_config import SeatingConfig
 from cinema_booking_system.booking import Booking
+    
+SELECTED_SYMBOL = "o"
+AVAILABLE_SYMBOL = "."
+UNAVAILABLE_SYMBOL = "x"
 
 class SeatingDisplay:
+    
     def __init__(self, seating_config: SeatingConfig, booking_data: List[Booking]):
         self.seating_config = seating_config
         self.booking_data = booking_data
@@ -59,7 +64,7 @@ class SeatingDisplay:
         print(last_row)
         
         # print the legend
-        print("\no - Selected seat | . - Available seat |  x - Unavailable seat  \n")
+        print(f"\n{SELECTED_SYMBOL} - Selected seat | {AVAILABLE_SYMBOL} - Available seat | {UNAVAILABLE_SYMBOL} - Unavailable seat  \n")
 
 # Example usage:
 if __name__ == "__main__":
