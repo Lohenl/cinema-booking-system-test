@@ -3,7 +3,6 @@ from typing import List
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.validation import Validator, ValidationError
-from cinema_booking_system.movie import Movie
 from cinema_booking_system.screening import Screening
 from cinema_booking_system.seating_display import SeatingDisplay
 from cinema_booking_system.booking import Booking
@@ -160,17 +159,32 @@ class BookingMenu:
                                 print("\nCancelling booking...")
                                 break
                         
-                        # Add selected seats to booking
-                        booking.seats = selected_seats
-                        
                         # Add booking to screening when booking is successful
+                        # TODO: Update models and perform database transactions here
+                        booking.seats = selected_seats
                         self.screening.booking_data.append(booking)
-                        # TODO: Construct and perform database transactions here
+                        print(f"\nBooking confirmed! Seats: {selected_seats}\n")
                         
                     else:
                         print(f"\nSorry, there are only {self.seats_available} seats available. Please try again.")
+                        
                 case "2":
-                    print("\nChecking it is")
+                    
+                    while True:
+                        print("Enter booking ID to check booking details, or enter blank to go back to the main menu.")
+                        booking_id = prompt("Booking ID: ")
+                        
+                        if booking_id:
+                            booking = next((booking for booking in self.screening.booking_data if booking.id == booking_id), None)
+                            if booking:
+                                print(f"\nBooking ID: {booking.id}")
+                                print(f"Seats: {booking.seats}")
+                                self.seating_display.display(selected_seats)
+                            else:
+                                print("\nBooking not found.")
+                        else:
+                            break
+                
                 case "3":
                     print("\nThank you for using GIC Cinemas System. Bye!")
                     break

@@ -3,15 +3,13 @@ from typing import List
 from cinema_booking_system.movie import Movie
 from cinema_booking_system.seating_config import SeatingConfig
 from cinema_booking_system.booking import Booking
-from cinema_booking_system.seating import Seating
 
 class Screening:
-    def __init__(self, start_time: datetime, seat_config: SeatingConfig, movie: Movie, seating_data:List[Seating], booking_data: List[Booking]):
+    def __init__(self, start_time: datetime, seat_config: SeatingConfig, movie: Movie, booking_data: List[Booking]):
         self.start_time = start_time
         self.seat_config = seat_config
         self.movie = movie
-        self._seating_data = seating_data if seating_data is not None else []
-        self._booking_data = booking_data if booking_data is not None else []
+        self.booking_data = booking_data if booking_data is not None else []
 
     @property
     def start_time(self) -> datetime:
