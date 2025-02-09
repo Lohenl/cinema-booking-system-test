@@ -23,82 +23,6 @@ class BookingController:
             # print(f'Seats already booked for: booking.id: {booking.id}, booking.seats: {booking.seats}')
         return any(seat in booking.seats for booking in self.screening.booking_data)
 
-    # (Unused) The basic default algo, fills from the back and left to right, doesn't hit the brief
-    def determine_seats_basic(self, seat_count: int) -> List[str]:
-        seats_per_row = self.screening.seat_config.seat_count_per_row
-        selected_seats: List[str] = []
-        reserved_seat_offset = 0 # tallies number of seats to skip when a seat was already booked by someone else
-        
-        # Loop until we find the number of seats required
-        for i in range(seat_count):
-            while True:
-            
-                seat_number = i + reserved_seat_offset
-                # Determine row (last row of a 0-based index, moving down by number of rows based on number of seats per row)
-                row_index = (seat_number // seats_per_row)
-                seat_row = chr(ord('A') + row_index)
-                
-                # Determine seat number (left-most starting from 1-based index)
-                seat = (seat_number % seats_per_row) + 1
-                
-                # Check if seat is available
-                seat_str = f"{seat_row}{seat}"
-                if not self.is_seat_booked(seat_str):
-                    print(f"Seat {seat_str} is available.")
-                    selected_seats.append(seat_str)
-                    print(f"reserved_seat_offset: {reserved_seat_offset}")
-                    break
-                else:
-                    # Update reserved seat tally and move to the next seat
-                    print(f"Seat {seat_str} is already booked. Trying next seat...")
-                    reserved_seat_offset += 1
-                    print(f"reserved_seat_offset: {reserved_seat_offset}")
-                       
-        return selected_seats
-
-    # (Unused) The basic user-specified algo, fills from the back and left to right, doesn't hit the brief
-    def determine_seats_from_position_basic(self, seat_count: int, user_input: str) -> List[str]:
-        seats_per_row = self.screening.seat_config.seat_count_per_row
-        selected_seats: List[str] = []
-        reserved_seat_offset = 0                # tallies number of seats to skip when a seat was already booked by someone else
-        
-        # Use regular expression to split the user input into row and seat number
-        match = re.match(r"([A-Za-z]+)(\d+)", user_input)
-        row_input = match.group(1).upper()
-        seat_input = int(match.group(2))
-        row_offset = ord(row_input) - ord('A')  # offset to determine the row based on user input
-        seat_offset = seat_input - 1            # offset to determine the seat based on user input
-        
-        # print(f"ord('A'): {ord('A')}, ord(row_input): {ord(row_input)}, row_offset: {row_offset}")
-        
-        # Loop until we find the number of seats required
-        for i in range(seat_count):
-            while True:
-            
-                seat_number = i + seat_offset + reserved_seat_offset
-                # Determine row (last row of a 0-based index, moving down by number of rows based on number of seats per row)
-                row_index = (seat_number // seats_per_row)
-                seat_row = chr(ord('A') + row_offset + row_index)
-
-                # Determine seat number (left-most starting from 1-based index)
-                seat = (seat_number % seats_per_row) + 1
-                
-                # Check if seat is available
-                seat_str = f"{seat_row}{seat}"
-                if not self.is_seat_booked(seat_str):
-                    print(f"Seat {seat_str} is available.")
-                    selected_seats.append(seat_str)
-                    print(f"reserved_seat_offset: {reserved_seat_offset}")
-                    break
-                else:
-                    # Update reserved seat tally and move to the next seat
-                    print(f"Seat {seat_str} is already booked. Trying next seat...")
-                    reserved_seat_offset += 1
-                    print(f"reserved_seat_offset: {reserved_seat_offset}")
-            
-        return selected_seats
-    
-    # The better default algo that hits the brief:
     def select_seats_from_center(self, seat_count: int, starting_row: str) -> List[str]:
         seats_per_row = self.screening.seat_config.seat_count_per_row
         selected_seats: List[str] = []
@@ -166,7 +90,6 @@ class BookingController:
         
         return selected_seats
 
-    # The better user-specified algo that hits the brief:
     def determine_seats_from_user_selection(self, seat_count: int, user_input: str) -> List[str]:
         seats_per_row = self.screening.seat_config.seat_count_per_row
         selected_seats: List[str] = []
