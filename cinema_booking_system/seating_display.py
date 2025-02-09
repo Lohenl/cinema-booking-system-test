@@ -48,9 +48,10 @@ class SeatingDisplay:
         
         # Print the row letters and seats
         for i in range(self.seating_config.row_count):
-            row = f"{chr(65+i)} "
+            row_letter = chr(65 + (self.seating_config.row_count - 1 - i))  # Reverse the row letters
+            row = f"{row_letter} "
             for j in range(self.seating_config.seat_count_per_row):
-                seat = f"{chr(65+i)}{j+1}"
+                seat = f"{chr(65+(self.seating_config.row_count - 1 - i))}{j+1}"
                 if seat in selected_seats:
                     row += f" {SELECTED_SYMBOL} "
                 elif any(seat in booking.seats for booking in self.booking_data):

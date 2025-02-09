@@ -17,7 +17,7 @@ pip install -r requirements.txt
 - [x] Check booking
 - [x] Set Unavailable Seating
 - [x] Display Unavailable Seating
-- [ ] Major fix: Reverse the row lettering
+- [x] Major fix: Reverse the row lettering
 - [ ] Default placement - Fix the little gaps
 - [ ] User-specified Placement
 - [ ] Unit Tests
