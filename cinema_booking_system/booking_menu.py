@@ -177,9 +177,10 @@ class BookingMenu:
         return selected_seats
 
     # TODO: The better default function, trying to hit the following brief:
-    #   - Start from furthest row of the screen
-    #   - Start from middle-most possible column
-    #   - When a row is not enough to accommodate the number of tickets, it should overflow to the next row closer to the screen
+    #   - Start from furthest row of the screen (done)
+    #   - Start from middle-most possible column (done)
+    #   - When a row is not enough to accommodate the number of tickets, it should overflow to the next row closer to the screen (done)
+    #   - TODO: Fix the bug where the seat selection algorithm doesn't fill up all the seats
     def determine_seats_default(self, seat_count: int) -> List[str]:
         seats_per_row = self.screening.seat_config.seat_count_per_row
         max_row = self.screening.seat_config.row_count
@@ -225,7 +226,7 @@ class BookingMenu:
     # TODO: The better user-specified function, trying to hit the following brief:
     #   - for first row only, fill up empty seats in the same row all the way to the right
     #   - for subsequent rows, fill from the center first, then move outwards
-    #   - seat allocation for overflow follows the rules for default seat selection
+    #   - seat allocation for overflow follows the rules for default seat selection (just delegate the call to the default function)
     def determine_seats_from_position(self, seat_count: int, user_input: str) -> List[str]:
         seats_per_row = self.screening.seat_config.seat_count_per_row
         max_row = self.screening.seat_config.row_count
