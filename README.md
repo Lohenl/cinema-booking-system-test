@@ -22,5 +22,5 @@ pip install -r requirements.txt
 - [x] User-specified Placement
 - [x] Unit Tests
 - [ ] End-to-End Tests
-- [ ] Encapsulate a BookingController class
+- [x] Encapsulate a BookingController class
 - [ ] Stretch use case: The wrap-around

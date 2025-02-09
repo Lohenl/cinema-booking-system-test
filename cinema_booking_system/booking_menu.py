@@ -1,11 +1,10 @@
 import re
-from typing import List
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.validation import Validator, ValidationError
 from cinema_booking_system.models.screening import Screening
-from cinema_booking_system.models.booking import Booking
 from cinema_booking_system.models.seating_config import SeatingConfig
+from cinema_booking_system.controllers.booking_controller import BookingController
 from cinema_booking_system.seating_display import SeatingDisplay
 
 class BookingMenuValidator(Validator):
@@ -61,15 +60,14 @@ class BookingMenu:
         self.completer = WordCompleter(self.options, ignore_case=True)
         self.validator = BookingMenuValidator(screening.seat_config, screening.booking_data)
         self.seating_display = SeatingDisplay(screening.seat_config, screening.booking_data)
-        self.total_seats = screening.seat_config.row_count * screening.seat_config.seat_count_per_row
-        
-        self.seats_available = self.total_seats - len(screening.booking_data)
+        self.seats_available = screening.seat_config.row_count * screening.seat_config.seat_count_per_row - len(screening.booking_data)
+        self.booker = BookingController(screening)
         
     def display_menu(self):
         user_input = prompt(
             "\n"
             "Welcome to GIC Cinemas\n"
-            f"[1] Book Tickets for '{self.screening.movie.title}' ({self.seats_available} seats available)\n"
+            f"[1] Book Tickets for '{self.screening.movie.title}' ({self.booker.seats_available} seats available)\n"
             "[2] Check Bookings\n"
             "[3] Exit\n"
             "\n"
@@ -81,7 +79,7 @@ class BookingMenu:
     
     def prompt_seat_count(self):
         user_input = prompt(
-            f"\nPlease enter the number of seats you would like to book (1-{self.seats_available}), or enter blank to go back to the main menu:\n"
+            f"\nPlease enter the number of seats you would like to book (1-{self.booker.seats_available}), or enter blank to go back to the main menu:\n"
         )
         return user_input
     
@@ -92,187 +90,6 @@ class BookingMenu:
         )
         return user_input
 
-    def is_seat_booked(self, seat: str) -> bool:
-        # for booking in self.screening.booking_data:
-            # print(f'Seats already booked for: booking.id: {booking.id}, booking.seats: {booking.seats}')
-        return any(seat in booking.seats for booking in self.screening.booking_data)
-
-    # The basic default algo, fills from the back and left to right, doesn't hit the brief
-    def determine_seats_basic(self, seat_count: int) -> List[str]:
-        seats_per_row = self.screening.seat_config.seat_count_per_row
-        selected_seats: List[str] = []
-        reserved_seat_offset = 0 # tallies number of seats to skip when a seat was already booked by someone else
-        
-        # Loop until we find the number of seats required
-        for i in range(seat_count):
-            while True:
-            
-                seat_number = i + reserved_seat_offset
-                # Determine row (last row of a 0-based index, moving down by number of rows based on number of seats per row)
-                row_index = (seat_number // seats_per_row)
-                seat_row = chr(ord('A') + row_index)
-                
-                # Determine seat number (left-most starting from 1-based index)
-                seat = (seat_number % seats_per_row) + 1
-                
-                # Check if seat is available
-                seat_str = f"{seat_row}{seat}"
-                if not self.is_seat_booked(seat_str):
-                    print(f"Seat {seat_str} is available.")
-                    selected_seats.append(seat_str)
-                    print(f"reserved_seat_offset: {reserved_seat_offset}")
-                    break
-                else:
-                    # Update reserved seat tally and move to the next seat
-                    print(f"Seat {seat_str} is already booked. Trying next seat...")
-                    reserved_seat_offset += 1
-                    print(f"reserved_seat_offset: {reserved_seat_offset}")
-                       
-        return selected_seats
-
-    # The basic user-specified algo, fills from the back and left to right, doesn't hit the brief
-    def determine_seats_from_position_basic(self, seat_count: int, user_input: str) -> List[str]:
-        seats_per_row = self.screening.seat_config.seat_count_per_row
-        selected_seats: List[str] = []
-        reserved_seat_offset = 0                # tallies number of seats to skip when a seat was already booked by someone else
-        
-        # Use regular expression to split the user input into row and seat number
-        match = re.match(r"([A-Za-z]+)(\d+)", user_input)
-        row_input = match.group(1).upper()
-        seat_input = int(match.group(2))
-        row_offset = ord(row_input) - ord('A')  # offset to determine the row based on user input
-        seat_offset = seat_input - 1            # offset to determine the seat based on user input
-        
-        # print(f"ord('A'): {ord('A')}, ord(row_input): {ord(row_input)}, row_offset: {row_offset}")
-        
-        # Loop until we find the number of seats required
-        for i in range(seat_count):
-            while True:
-            
-                seat_number = i + seat_offset + reserved_seat_offset
-                # Determine row (last row of a 0-based index, moving down by number of rows based on number of seats per row)
-                row_index = (seat_number // seats_per_row)
-                seat_row = chr(ord('A') + row_offset + row_index)
-
-                # Determine seat number (left-most starting from 1-based index)
-                seat = (seat_number % seats_per_row) + 1
-                
-                # Check if seat is available
-                seat_str = f"{seat_row}{seat}"
-                if not self.is_seat_booked(seat_str):
-                    print(f"Seat {seat_str} is available.")
-                    selected_seats.append(seat_str)
-                    print(f"reserved_seat_offset: {reserved_seat_offset}")
-                    break
-                else:
-                    # Update reserved seat tally and move to the next seat
-                    print(f"Seat {seat_str} is already booked. Trying next seat...")
-                    reserved_seat_offset += 1
-                    print(f"reserved_seat_offset: {reserved_seat_offset}")
-            
-        return selected_seats
-    
-    # The better default algo that hits the brief:
-    #   - Start from furthest row of the screen
-    #   - Start from middle-most possible column
-    #   - When a row is not enough to accommodate the number of tickets, it should overflow to the next row closer to the screen
-    #   - TODO: Fix the bug where the seat selection algorithm doesn't fill up all the seats
-    def select_seats_from_center(self, seat_count: int, starting_row: str) -> List[str]:
-        seats_per_row = self.screening.seat_config.seat_count_per_row
-        selected_seats: List[str] = []
-        reserved_seat_offset = 0 # tallies number of seats to skip when a seat was already booked by someone else
-        
-        # Calculate the center column
-        center_column = seats_per_row // 2
-
-        # Loop until we find the number of seats required
-        for i in range(seat_count):
-            while True:
-
-                seat_number = i + reserved_seat_offset
-                # Determine row (last row of a 0-based index, moving down by number of rows based on number of seats per row)
-                row_offset = ord(starting_row) - ord('A') if starting_row is not None else 0
-                row_index = (seat_number // seats_per_row)
-                seat_row = chr(ord('A') + row_offset + row_index)
-                
-                # Determine seat number (starting from the center column and moving outwards)
-                # NOTE: this is the harder part
-                # more clever way that centers the seats, but misses some seats
-                #   - even seats_per_row: All seats 1 unfilled across all rows 
-                #   - odd seats_per_row: seats 1 and last unfilled across alternating rows 
-                column_offset = (seat_number % seats_per_row) // 2
-                seat = center_column + column_offset * (-1 if seat_number % 2 == 0 else 1) + 1
-                print(f'seat_number: {seat_number}, row_index: {row_index}, seat_row: {seat_row}, column_offset: {column_offset}, seat: {seat}')
-                
-                # Check if seat is available
-                seat_str = f"{seat_row}{seat}"
-                if not self.is_seat_booked(seat_str) and seat_str not in selected_seats:
-                    print(f"Seat {seat_str} is available.")
-                    selected_seats.append(seat_str)
-                    print(f"reserved_seat_offset: {reserved_seat_offset}")
-                    break
-                else:
-                    # Update reserved seat tally and move to the next seat
-                    print(f"Seat {seat_str} is already booked or unavailable. Trying next seat...")
-                    reserved_seat_offset += 1
-                    print(f"reserved_seat_offset: {reserved_seat_offset}")
-        return selected_seats
-
-    # The better user-specified algo that hits the brief:
-    #   - For first row only, fill up empty seats in the same row all the way to the right
-    #   - When there is not enough seats available, it should overflow to the next row closer to the screen
-    #   - Seat allocation for overflow follows the rules for default seat selection (just delegate the call to the default function)
-    def determine_seats_from_user_selection(self, seat_count: int, user_input: str) -> List[str]:
-        seats_per_row = self.screening.seat_config.seat_count_per_row
-        selected_seats: List[str] = []
-        
-        # Use regular expression to split the user input into row and seat number
-        match = re.match(r"([A-Za-z]+)(\d+)", user_input)
-        row_input = match.group(1).upper()
-        seat_input = int(match.group(2))
-        row_offset = ord(row_input) - ord('A')  # offset to determine the row based on user input
-        seat_offset = seat_input - 1            # offset to determine the seat based on user input
-        first_row_filled = False
-        
-        # print(f"ord('A'): {ord('A')}, ord(row_input): {ord(row_input)}, row_offset: {row_offset}")
-        
-        # Only for the first row, fill up empty seats in the same row all the way to the right
-        # Loop until we fill up the row towards the right
-        for i in range(seat_count):
-            
-            # Break out of loop if we have filled up the first row
-            if first_row_filled == True:
-                # print(f"First row filled. Moving to next row...")
-                break
-            
-            while True:
-            
-                seat_number = i + seat_offset
-                # Determine row (last row of a 0-based index, moving down by number of rows based on number of seats per row)
-                row_index = (seat_number // seats_per_row)
-                seat_row = chr(ord('A') + row_offset + row_index)
-                
-                # Determine seat number (left-most starting from 1-based index)
-                seat = (seat_number % seats_per_row) + 1
-                # Prepare to break out of main loop when eaching end of the row  
-                if seat == seats_per_row:
-                    first_row_filled = True
-                
-                # Check if seat is available
-                seat_str = f"{seat_row}{seat}"
-                if not self.is_seat_booked(seat_str):
-                    # print(f"Seat {seat_str} is available, adding to selection.")
-                    selected_seats.append(seat_str)
-                    break
-                    
-        # For subsequent rows, fill from the center first, then move outwards
-        next_row = chr(ord(row_input) + 1)
-        # print(f"next_row: {next_row}")
-        remaining_selected_seats: List[str] = self.select_seats_from_center(seat_count - len(selected_seats), next_row)
-        selected_seats.extend(remaining_selected_seats)
-        
-        return selected_seats
-    
     def run(self):
         while True:
             menu_choice = self.display_menu()
@@ -280,19 +97,17 @@ class BookingMenu:
                 case "1":
                     # Prompt user for number of seats
                     input_seats = self.prompt_seat_count()
-                    if input_seats.isdigit() and 1 <= int(input_seats) <= self.seats_available:
+                    if input_seats.isdigit() and 1 <= int(input_seats) <= self.booker.seats_available:
                         
                         # Reserve number of seats
                         seat_count = int(input_seats)
                         print(f"\nBooking {seat_count} seats for {self.screening.movie.title}...")
-                        # TODO: Build client integration with backend for seat reservation here
                         
                         # Create a booking object and generate an id
-                        new_id = "GIC" + str(len(self.screening.booking_data) + 1).zfill(4) # should be date + uuid in practice
-                        booking = Booking(new_id, [])
+                        booking = self.booker.new_booking()
                         
-                        self.seats_available -= int(input_seats) # TODO: eh lets upgrade this later
-                        print(f"\nSuccessfully reserved {input_seats} seats for {self.screening.movie.title} at {self.screening.start_time}.\nBooking ID: {new_id} \n")
+                        self.booker.seats_available -= int(input_seats)
+                        print(f"\nSuccessfully reserved {input_seats} seats for {self.screening.movie.title} at {self.screening.start_time}.\nBooking ID: {booking.id} \n")
                         
                         # Prompt user to select seats
                         selected_seats = None
@@ -301,10 +116,10 @@ class BookingMenu:
                             
                             if selected_seats is None:
                                 # Determine the default seat selection - rear and center
-                                selected_seats = self.select_seats_from_center(seat_count, None)
+                                selected_seats = self.booker.select_seats_from_center(seat_count, None)
                             else:
                                 # Determine the seat selection based on user input
-                                selected_seats = self.determine_seats_from_user_selection(seat_count, seat_input)
+                                selected_seats = self.booker.determine_seats_from_user_selection(seat_count, seat_input)
                             
                             # Display seating
                             print(f"Selected Seats: {selected_seats}\n")
@@ -315,15 +130,15 @@ class BookingMenu:
                                 # TODO: Update models and perform database transactions here
                                 booking.seats = selected_seats
                                 self.screening.booking_data.append(booking)
-                                print(f"\nBooking confirmed! Booking ID: {new_id} Seats: {selected_seats}\n")
+                                print(f"\nBooking confirmed! Booking ID: {booking.id} Seats: {selected_seats}\n")
                                 break
                             elif seat_input.lower() == "cancel":
-                                self.seats_available += seat_count
+                                self.booker.seats_available += seat_count
                                 print("\nCancelling booking...")
                                 break
                         
                     else:
-                        print(f"\nSorry, there are only {self.seats_available} seats available. Please try again.")
+                        print(f"\nSorry, there are only {self.booker.seats_available} seats available. Please try again.")
                         
                 case "2":
                     
