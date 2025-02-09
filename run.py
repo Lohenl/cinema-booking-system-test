@@ -12,7 +12,6 @@ if __name__ == "__main__":
     # skip some steps for faster testing
     user_input = "Down 10 10" # Test with 44 seats
     user_input = "Down 11 11" # Test with 44 seats
-    user_input = "Down 12 12" # Test with 83 seats
     
     if user_input.lower() == "exit":
         print("Exiting Configuration Menu\n")

@@ -19,7 +19,7 @@ pip install -r requirements.txt
 - [x] Display Unavailable Seating
 - [x] Major fix: Reverse the row lettering
 - [ ] Default placement - Fix the little gaps
-- [ ] User-specified Placement
+- [x] User-specified Placement
 - [ ] Unit Tests
 - [ ] End-to-End Tests
-- [ ] Stretch: The wrap-around
+- [ ] Stretch use case: The wrap-around
