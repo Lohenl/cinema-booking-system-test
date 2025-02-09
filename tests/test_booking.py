@@ -1,10 +1,10 @@
 # filepath: /c:/Users/winso/cinema-booking-system-test/tests/test_booking.py
 import unittest
 from datetime import datetime
-from cinema_booking_system.movie import Movie
-from cinema_booking_system.screening import Screening
-from cinema_booking_system.booking import Booking
-from cinema_booking_system.seating_config import SeatingConfig
+from cinema_booking_system.models.movie import Movie
+from cinema_booking_system.models.screening import Screening
+from cinema_booking_system.models.booking import Booking
+from cinema_booking_system.models.seating_config import SeatingConfig
 
 class TestBooking(unittest.TestCase):
     def test_booking_creation(self):

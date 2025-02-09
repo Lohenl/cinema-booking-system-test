@@ -3,10 +3,10 @@ from typing import List
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.validation import Validator, ValidationError
-from cinema_booking_system.screening import Screening
+from cinema_booking_system.models.screening import Screening
+from cinema_booking_system.models.booking import Booking
+from cinema_booking_system.models.seating_config import SeatingConfig
 from cinema_booking_system.seating_display import SeatingDisplay
-from cinema_booking_system.booking import Booking
-from cinema_booking_system.seating_config import SeatingConfig
 
 class BookingMenuValidator(Validator):
     
@@ -200,10 +200,10 @@ class BookingMenu:
                 seat_row = chr(ord('A') + row_index)
                 
                 # Determine seat number (starting from the center column and moving outwards)
-                # NOTE: this is the harder part3
+                # NOTE: this is the harder part
                 # more clever way that centers the seats, but misses some seats
-                #   - All rows: Seats 1 unfilled with even seats_per_row
-                #   - Alternating rows: seats 1 and last always unfilled with odd seats_per_row
+                #   - even seats_per_row: All seats 1 unfilled across all rows 
+                #   - odd seats_per_row: seats 1 and last unfilled across alternating rows 
                 column_offset = (seat_number % seats_per_row) // 2
                 seat = center_column + column_offset * (-1 if seat_number % 2 == 0 else 1) + 1
                 print(f'seat_number: {seat_number}, row_index: {row_index}, seat_row: {seat_row}, column_offset: {column_offset}, seat: {seat}')
@@ -300,7 +300,7 @@ class BookingMenu:
                             # TODO: Implement seat selection algorithm here
                             if selected_seats is None:
                                 # Determine the default seat selection - rear and center
-                                selected_seats = self.determine_seats_default_basic(seat_count)
+                                selected_seats = self.determine_seats_default(seat_count)
                             else:
                                 # Determine the seat selection based on user input
                                 selected_seats = self.determine_seats_from_position_basic(seat_count, seat_input)

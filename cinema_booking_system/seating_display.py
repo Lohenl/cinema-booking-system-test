@@ -1,6 +1,6 @@
 from typing import List
-from cinema_booking_system.seating_config import SeatingConfig
-from cinema_booking_system.booking import Booking
+from cinema_booking_system.models.seating_config import SeatingConfig
+from cinema_booking_system.models.booking import Booking
 
 SELECTED_SYMBOL = "o"
 AVAILABLE_SYMBOL = "."

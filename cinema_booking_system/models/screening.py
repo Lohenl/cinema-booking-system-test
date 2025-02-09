@@ -1,8 +1,8 @@
 from datetime import datetime
 from typing import List
-from cinema_booking_system.movie import Movie
-from cinema_booking_system.seating_config import SeatingConfig
-from cinema_booking_system.booking import Booking
+from cinema_booking_system.models.movie import Movie
+from cinema_booking_system.models.seating_config import SeatingConfig
+from cinema_booking_system.models.booking import Booking
 
 class Screening:
     def __init__(self, start_time: datetime, seat_config: SeatingConfig, movie: Movie, booking_data: List[Booking]):
