@@ -22,3 +22,4 @@ pip install -r requirements.txt
 - [ ] User-specified Placement
 - [ ] Unit Tests
 - [ ] End-to-End Tests
+- [ ] Stretch: The wrap-around

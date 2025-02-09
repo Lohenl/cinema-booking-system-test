@@ -197,8 +197,8 @@ class BookingMenu:
                 seat_number = i + reserved_seat_offset
                 # Determine row (last row of a 0-based index, moving down by number of rows based on number of seats per row)
                 row_index = (seat_number // seats_per_row)
-                seat_row = chr((ord('A') + (max_row - 1) - row_index)) # row is reversed
-
+                seat_row = chr(ord('A') + row_index)
+                
                 # Determine seat number (starting from the center column and moving outwards)
                 # NOTE: this is the harder part3
                 # more clever way that centers the seats, but misses some seats
@@ -250,9 +250,8 @@ class BookingMenu:
             
                 seat_number = i + seat_offset + reserved_seat_offset
                 # Determine row (last row of a 0-based index, moving down by number of rows based on number of seats per row)
-                print(f"row_offset: {row_offset}, seat_number: {seat_number}, max: {max_row - 1}, move_forward: {(seat_number // seats_per_row)}")
                 row_index = (seat_number // seats_per_row)
-                seat_row = chr(ord('A') + row_offset - row_index)
+                seat_row = chr(ord('A') + row_index)
 
                 # Determine seat number (left-most starting from 1-based index)
                 seat = (seat_number % seats_per_row) + 1
