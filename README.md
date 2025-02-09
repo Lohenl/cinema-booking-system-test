@@ -11,6 +11,16 @@ Coding assignment for a test - A cinema booking system for managing bookings.
 pip install -r requirements.txt
 ```
 
+## Running
+```bash
+python3 run.py
+```
+
+## Testing
+```bash
+python3 test.py
+```
+
 ## To Do
 
 - [x] Save booking
