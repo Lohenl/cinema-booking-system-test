@@ -154,6 +154,7 @@ class BookingMenu:
                                     self.screening.booking_data.append(booking)
                                     self.booker.save_booking(booking)
                                     print(f"\nBooking confirmed! Booking ID: {booking.id} Seats: {selected_seats}\n")
+                                    time.sleep(2) # block the thread to make sure the user reads the message
                                     break
                                 elif seat_input.lower() == "cancel":
                                     self.booker.seats_available += seat_count

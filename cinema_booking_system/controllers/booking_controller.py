@@ -159,5 +159,5 @@ class BookingController:
     
     def save_booking(self, booking: Booking) -> None:
         # TODO: Update backend and/or perform database transactions for booking confirmations here
-        print(booking)
+        # print(booking)
         return None
