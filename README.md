@@ -5,6 +5,10 @@ Coding assignment for a test - A cinema booking system for managing bookings.
 
 - Handle bookings
 
+## System Requirements
+
+- Tested in Windows 11 with Python 3.12
+
 ## Installation
 
 ```bash
@@ -33,5 +37,7 @@ python3 test.py
 - [x] Unit Tests
 - [x] End-to-End Tests
 - [x] Encapsulate a BookingController class
+- [ ] Docs: Explain design
+- [ ] Docs: Assumptions made
 - [ ] Stretch use case: The wrap-around
 - [ ] Stretch test cases: More test cases, more coverage
