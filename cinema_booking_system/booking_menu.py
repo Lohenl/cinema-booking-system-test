@@ -63,8 +63,7 @@ class BookingMenu:
         self.seating_display = SeatingDisplay(screening.seat_config, screening.booking_data)
         self.total_seats = screening.seat_config.row_count * screening.seat_config.seat_count_per_row
         
-        self.seats_available = self.total_seats
-        # self.seats_available = self.total_seats - len(screening.booking_data)
+        self.seats_available = self.total_seats - len(screening.booking_data)
         
     def display_menu(self):
         user_input = prompt(
@@ -93,6 +92,11 @@ class BookingMenu:
         )
         return user_input
 
+    def is_seat_booked(self, seat: str) -> bool:
+        # for booking in self.screening.booking_data:
+            # print(f'Seats already booked for: booking.id: {booking.id}, booking.seats: {booking.seats}')
+        return any(seat in booking.seats for booking in self.screening.booking_data)
+
     def determine_seats_from_position(self, row: str, seat: int, seat_count: int) -> List[str]:
         selected_seats: List[str] = []
         
@@ -106,14 +110,34 @@ class BookingMenu:
             
         return selected_seats
     
-    def predetermine_seats(self, seat_count: int) -> List[str]:
+    def determine_seats_basic(self, seat_count: int) -> List[str]:
         selected_seats: List[str] = []
+        reserved_seat_offset = 0 # tallies number of seats to skip when a seat was already booked by someone else
+        
+        # Loop until we find the number of seats required
         for i in range(seat_count):
-            row = chr(ord('A') + (self.screening.seat_config.row_count - 1) - (i // self.screening.seat_config.seat_count_per_row))
-            seat = (i % self.screening.seat_config.seat_count_per_row) + 1
-            selected_seats.append(f"{row}{seat}")
-                            
-            selected_seats.append(f"{row}{seat}")
+            while True:
+            
+                seat_number = i + reserved_seat_offset
+                # Determine row (last row of a 0-based index, moving down by number of rows based on number of seats per row)
+                seat_row = chr(ord('A') + (self.screening.seat_config.row_count - 1) - (seat_number // self.screening.seat_config.seat_count_per_row))
+                
+                # Determine seat number (left-most starting from 1-based index)
+                seat = (seat_number % self.screening.seat_config.seat_count_per_row) + 1
+                
+                # Check if seat is available
+                seat_str = f"{seat_row}{seat}"
+                if not self.is_seat_booked(seat_str):
+                    print(f"Seat {seat_str} is available.")
+                    selected_seats.append(seat_str)
+                    print(f"reserved_seat_offset: {reserved_seat_offset}")
+                    break
+                else:
+                    # Update reserved seat tally and move to the next seat
+                    print(f"Seat {seat_str} is already booked. Trying next seat...")
+                    reserved_seat_offset += 1
+                    print(f"reserved_seat_offset: {reserved_seat_offset}")
+                       
         return selected_seats
 
     def run(self):
@@ -142,9 +166,10 @@ class BookingMenu:
                         seat_input = None
                         while True:
                             
+                            # TODO: Implement seat selection algorithm here
                             if selected_seats is None:
                                 # Determine the default seat selection - rear and center
-                                selected_seats = self.predetermine_seats(seat_count)
+                                selected_seats = self.determine_seats_basic(seat_count)
                             else:
                                 # Determine the seat selection based on user input
                                 selected_seats = self.determine_seats_from_position(seat_input)
