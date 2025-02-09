@@ -6,6 +6,7 @@ from cinema_booking_system.models.screening import Screening
 
 class TestScreening(unittest.TestCase):
     def test_screening_creation(self):
+        """Object Creation: Screening"""
         seating_config = SeatingConfig(10, 10)
         movie = Movie("John Wick")
         screening = Screening(datetime(2025, 2, 8, 19, 30), seating_config, movie, [])

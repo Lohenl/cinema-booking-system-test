@@ -13,12 +13,12 @@ class TestSeatingDisplay(unittest.TestCase):
         self.display = SeatingDisplay(self.seating_config, self.booking_data)
 
     def test_initialization(self):
-        """Test proper initialization of SeatingDisplay."""
+        """Object Creation: SeatingDisplay"""
         self.assertEqual(self.display.seating_config, self.seating_config)
         self.assertEqual(self.display.booking_data, self.booking_data)
 
     def test_property_setters(self):
-        """Test property setters work correctly."""
+        """Property Setting: SeatingDisplay"""
         new_config = SeatingConfig(4, 5)
         new_bookings = [Booking("GIC0001", ["A1"])]
         
@@ -30,7 +30,7 @@ class TestSeatingDisplay(unittest.TestCase):
 
     @patch('sys.stdout', new_callable=StringIO)
     def test_display_empty_cinema(self, mock_stdout):
-        """Test displaying an empty cinema with no selected or booked seats."""
+        """Display Test: Test displaying an empty cinema with no selected or booked seats."""
         self.display.display()
         output = mock_stdout.getvalue()
         
@@ -50,7 +50,7 @@ class TestSeatingDisplay(unittest.TestCase):
 
     @patch('sys.stdout', new_callable=StringIO)
     def test_display_with_selected_seats(self, mock_stdout):
-        """Test displaying theater with selected seats."""
+        """Display Test: Test displaying theater with selected seats."""
         selected_seats = ["A1", "B2"]
         self.display.display(selected_seats)
         output = mock_stdout.getvalue()
@@ -61,7 +61,7 @@ class TestSeatingDisplay(unittest.TestCase):
 
     @patch('sys.stdout', new_callable=StringIO)
     def test_display_with_booked_seats(self, mock_stdout):
-        """Test displaying theater with booked seats."""
+        """Display Test: Test displaying theater with booked seats."""
         booking = Booking("GIC0001", ["A1", "A2"])
         self.display.booking_data = [booking]
         self.display.display()
@@ -73,7 +73,7 @@ class TestSeatingDisplay(unittest.TestCase):
 
     @patch('sys.stdout', new_callable=StringIO)
     def test_display_with_mixed_seats(self, mock_stdout):
-        """Test displaying theater with both selected and booked seats."""
+        """Display Test: Test displaying theater with both selected and booked seats."""
         booking = Booking("GIC0001", ["A1"])
         self.display.booking_data = [booking]
         selected_seats = ["B1"]
@@ -90,7 +90,7 @@ class TestSeatingDisplay(unittest.TestCase):
         self.assertEqual(available_count, 10+1) # include 1 more from the legend
 
     def test_legend_display(self):
-        """Test that the legend is displayed correctly."""
+        """Display Test: Test that the legend is displayed correctly."""
         with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
             self.display.display()
             output = mock_stdout.getvalue()
