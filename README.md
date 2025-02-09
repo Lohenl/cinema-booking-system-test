@@ -32,12 +32,12 @@ python3 test.py
 - [x] Set Unavailable Seating
 - [x] Display Unavailable Seating
 - [x] Major fix: Reverse the row lettering
-- [ ] Default placement - Fix the little gaps
+- [x] Default placement
 - [x] User-specified Placement
 - [x] Unit Tests
 - [x] End-to-End Tests
 - [x] Encapsulate a BookingController class
 - [ ] Docs: Explain design
 - [ ] Docs: Assumptions made
-- [ ] Stretch use case: The wrap-around
+- [x] Stretch use case: The wrap-around
 - [ ] Stretch test cases: More test cases, more coverage

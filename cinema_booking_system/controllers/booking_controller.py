@@ -23,7 +23,7 @@ class BookingController:
             # print(f'Seats already booked for: booking.id: {booking.id}, booking.seats: {booking.seats}')
         return any(seat in booking.seats for booking in self.screening.booking_data)
 
-    # The basic default algo, fills from the back and left to right, doesn't hit the brief
+    # (Unused) The basic default algo, fills from the back and left to right, doesn't hit the brief
     def determine_seats_basic(self, seat_count: int) -> List[str]:
         seats_per_row = self.screening.seat_config.seat_count_per_row
         selected_seats: List[str] = []
@@ -56,7 +56,7 @@ class BookingController:
                        
         return selected_seats
 
-    # The basic user-specified algo, fills from the back and left to right, doesn't hit the brief
+    # (Unused) The basic user-specified algo, fills from the back and left to right, doesn't hit the brief
     def determine_seats_from_position_basic(self, seat_count: int, user_input: str) -> List[str]:
         seats_per_row = self.screening.seat_config.seat_count_per_row
         selected_seats: List[str] = []
@@ -99,7 +99,6 @@ class BookingController:
         return selected_seats
     
     # The better default algo that hits the brief:
-    #   - TODO: Fix the bug where the seat selection algorithm doesn't fill up all the seats
     def select_seats_from_center(self, seat_count: int, starting_row: str) -> List[str]:
         seats_per_row = self.screening.seat_config.seat_count_per_row
         selected_seats: List[str] = []
@@ -154,6 +153,16 @@ class BookingController:
             if seats_needed > 0:
                 print(f"selected_seats: {selected_seats}, seats_needed: {seats_needed}")
                 current_row = chr(ord(current_row) + 1)
+                
+                # Wrap around to the last row again if the front row of the cinema has been reached
+                if current_row == chr(ord('A') + self.screening.seat_config.row_count):
+                    current_row = 'A'
+                #   - TODO: There is an edge case unlikely encountered in production workloads, but is a bug
+                #       - SeatConfig: Movie 11 11
+                #       - Book 11 seats from position B1
+                #       - Book 110 seats from anywhere in the middle of the cinema (e.g. H9)
+                #       - Seats get missed as a result (default assignments wrap around nicely)
+                #       - NOTE: Doesnt have to be a complete row, any booking needing a wraparound will have this bug
         
         return selected_seats
 
