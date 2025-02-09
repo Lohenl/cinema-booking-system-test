@@ -1,4 +1,5 @@
-from cinema_booking_system import Movie, Screening, SeatingConfig, BookingMenu, ConfigMenu
+from cinema_booking_system import BookingMenu, ConfigMenu
+from cinema_booking_system.models import Movie, Screening, SeatingConfig
 from datetime import datetime
 
 # Check whether the script is being run directly or being imported as a module
