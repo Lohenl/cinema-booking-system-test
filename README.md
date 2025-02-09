@@ -20,6 +20,6 @@ pip install -r requirements.txt
 - [x] Major fix: Reverse the row lettering
 - [ ] Default placement - Fix the little gaps
 - [x] User-specified Placement
-- [ ] Unit Tests
+- [x] Unit Tests
 - [ ] End-to-End Tests
 - [ ] Stretch use case: The wrap-around
