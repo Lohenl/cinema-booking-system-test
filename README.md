@@ -27,20 +27,3 @@ python3 test.py
 ## Design Documentation
 
 Design documentation can be found here: [Design Documentation](/docs/design.md)
-
-## To Do
-
-- [x] Save booking
-- [x] Check booking
-- [x] Set Unavailable Seating
-- [x] Display Unavailable Seating
-- [x] Major fix: Reverse the row lettering
-- [x] Default placement
-- [x] User-specified Placement
-- [x] Unit Tests
-- [x] End-to-End Tests
-- [x] Encapsulate a BookingController class
-- [x] Docs: Explain design
-- [x] Docs: Assumptions made
-- [x] Stretch use case: The wrap-around
-- [ ] Stretch test cases: More test cases, more coverage
