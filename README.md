@@ -5,15 +5,14 @@ Coding assignment for a test - A cinema booking system for managing bookings.
 
 - Handle bookings
 
-## System Requirements
-
-- Tested in Windows 11 with Python 3.12
-
 ## Installation
 
 ```bash
 pip install -r requirements.txt
 ```
+
+- Tested in Windows 11 with Python 3.12
+- For a quick guide on the environment setup, check here: [Setting up the local environment](/docs/env_setup)
 
 ## Running
 ```bash
@@ -24,6 +23,10 @@ python3 run.py
 ```bash
 python3 test.py
 ```
+
+## Design Documentation
+
+Design documentation can be found here: [Design Documentation](/docs/design.md)
 
 ## To Do
 
