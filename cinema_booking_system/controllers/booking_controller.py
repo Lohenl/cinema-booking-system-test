@@ -103,42 +103,58 @@ class BookingController:
     def select_seats_from_center(self, seat_count: int, starting_row: str) -> List[str]:
         seats_per_row = self.screening.seat_config.seat_count_per_row
         selected_seats: List[str] = []
-        reserved_seat_offset = 0 # tallies number of seats to skip when a seat was already booked by someone else
         
         # Calculate the center column
         center_column = seats_per_row // 2
-
-        # Loop until we find the number of seats required
-        for i in range(seat_count):
-            while True:
-
-                seat_number = i + reserved_seat_offset
-                # Determine row (last row of a 0-based index, moving down by number of rows based on number of seats per row)
-                row_offset = ord(starting_row) - ord('A') if starting_row is not None else 0
-                row_index = (seat_number // seats_per_row)
-                seat_row = chr(ord('A') + row_offset + row_index)
+        
+        # Initialize row
+        # row_offset = ord(starting_row) - ord('A') if starting_row is not None else 0
+        starting_row = 'A' if starting_row is None else starting_row
+        current_row = starting_row
+        seats_needed = seat_count
+        
+        print(f"starting_row: {starting_row}, current_row:{current_row}, seats_needed:{seats_needed}")
+        
+        while seats_needed > 0:
+            # For each row, start from center and expand outwards
+            left_ptr = center_column
+            right_ptr = center_column + 1
+            row_seats: List[str] = []
+            
+            while len(row_seats) < min(seats_per_row, seats_needed):
                 
-                # Determine seat number (starting from the center column and moving outwards)
-                # NOTE: this is the harder part
-                # more clever way that centers the seats, but misses some seats
-                #   - even seats_per_row: All seats 1 unfilled across all rows 
-                #   - odd seats_per_row: seats 1 and last unfilled across alternating rows 
-                column_offset = (seat_number % seats_per_row) // 2
-                seat = center_column + column_offset * (-1 if seat_number % 2 == 0 else 1) + 1
-                print(f'seat_number: {seat_number}, row_index: {row_index}, seat_row: {seat_row}, column_offset: {column_offset}, seat: {seat}')
+                print(f"row_seats: {row_seats}")
                 
-                # Check if seat is available
-                seat_str = f"{seat_row}{seat}"
-                if not self.is_seat_booked(seat_str) and seat_str not in selected_seats:
-                    print(f"Seat {seat_str} is available.")
-                    selected_seats.append(seat_str)
-                    print(f"reserved_seat_offset: {reserved_seat_offset}")
+                # Try center-left seat
+                if left_ptr >= 0:
+                    seat_str = f"{current_row}{left_ptr + 1}"
+                    if not self.is_seat_booked(seat_str) and seat_str not in selected_seats:
+                        row_seats.append(seat_str)
+                    left_ptr -= 1
+                    print(f"left_ptr: {left_ptr}")
+                
+                # If we still need seats, try center-right seat
+                if len(row_seats) < min(seats_per_row, seats_needed) and right_ptr < seats_per_row:
+                    seat_str = f"{current_row}{right_ptr + 1}"
+                    if not self.is_seat_booked(seat_str) and seat_str not in selected_seats:
+                        row_seats.append(seat_str)
+                    right_ptr += 1
+                    print(f"right_ptr: {right_ptr}")
+                    
+                # Skip to the next row if both pointers reached the end (the row is full)
+                if (left_ptr < 0) and (right_ptr == seats_per_row):
+                    print(f"Row {current_row} is full, unable to assign more seats")
                     break
-                else:
-                    # Update reserved seat tally and move to the next seat
-                    print(f"Seat {seat_str} is already booked or unavailable. Trying next seat...")
-                    reserved_seat_offset += 1
-                    print(f"reserved_seat_offset: {reserved_seat_offset}")
+            
+            # Add the seats found in this row to our selection
+            selected_seats.extend(row_seats)
+            seats_needed -= len(row_seats)
+            
+            # Move to next row if we still need more seats
+            if seats_needed > 0:
+                print(f"selected_seats: {selected_seats}, seats_needed: {seats_needed}")
+                current_row = chr(ord(current_row) + 1)
+        
         return selected_seats
 
     # The better user-specified algo that hits the brief:
@@ -152,9 +168,19 @@ class BookingController:
         seat_input = int(match.group(2))
         row_offset = ord(row_input) - ord('A')  # offset to determine the row based on user input
         seat_offset = seat_input - 1            # offset to determine the seat based on user input
-        first_row_filled = False
-        
         # print(f"ord('A'): {ord('A')}, ord(row_input): {ord(row_input)}, row_offset: {row_offset}")
+        
+        first_row_filled = False
+        # NOTE: (Bug) if the existing row is fully filled, the algo enters an infinite loop
+        # Nominally, this can be handled with menu/frontend validation to prevent selecting a booked seat.
+        # However, as a big precaution, I'll put this check here until the exact scenario is reproduced, again
+        booked_seats_for_given_row: List[str] = []
+        for booking in self.screening.booking_data:
+            for seat in booking.seats:
+                if seat.startswith(user_input):
+                    booked_seats_for_given_row.append(seat)
+        if len(booked_seats_for_given_row) == seats_per_row:
+            first_row_filled = False
         
         # Only for the first row, fill up empty seats in the same row all the way to the right
         # Loop until we fill up the row towards the right
@@ -184,7 +210,7 @@ class BookingController:
                     # print(f"Seat {seat_str} is available, adding to selection.")
                     selected_seats.append(seat_str)
                     break
-                    
+                
         # For subsequent rows, fill from the center first, then move outwards
         next_row = chr(ord(row_input) + 1)
         # print(f"next_row: {next_row}")
