@@ -12,7 +12,7 @@ pip install -r requirements.txt
 ```
 
 - Tested in Windows 11 with Python 3.12
-- For a quick guide on the environment setup, check here: [Setting up the local environment](/docs/env_setup)
+- For a quick guide on the environment setup, check here: [Setting up the local environment](/docs/env_setup.md)
 
 ## Running
 ```bash
