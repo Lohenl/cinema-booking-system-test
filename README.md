@@ -3,7 +3,8 @@ Coding assignment for a test - A cinema booking system for managing bookings.
 
 ## Features
 
-- Handle bookings
+- Configure application
+- Manage bookings
 
 ## Installation
 
