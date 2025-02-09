@@ -5,26 +5,25 @@ from datetime import datetime
 # Check whether the script is being run directly or being imported as a module
 if __name__ == "__main__":
     
-    # run the initial config menu
-    # config_menu = ConfigMenu()
-    # user_input = config_menu.prompt_config()
+    # This part skips all the data retrieval from backend, so you just have a config menu instead of a backend data fetch
     
-    # skip some steps for faster testing
-    user_input = "Down 10 10" # Test with 44 seats
-    user_input = "Down 11 11" # Test with 44 seats
+    # Run the initial config menu
+    config_menu = ConfigMenu()
+    user_input = config_menu.prompt_config()
     
-    if user_input.lower() == "exit":
-        print("Exiting Configuration Menu\n")
-    else:
-        print(f"Configured: {user_input}")
-        parts = user_input.split()
-        title = parts[0]
-        row_count = int(parts[1])
-        seat_count_per_row = int(parts[2])
-        movie = Movie(title)
-        seating_config = SeatingConfig(row_count, seat_count_per_row)
-        screening = Screening(datetime.now(), seating_config, movie, [])
+    # Alternatively, you can replace the above steps with either of the following to skip entering configs
+    # user_input = "Down 10 10" # Test with even number of seats
+    # user_input = "Down 11 11" # Test with odd number of seats
     
-    # run the booking menu
+    print(f"Configured: {user_input}")
+    parts = user_input.split()
+    title = parts[0]
+    row_count = int(parts[1])
+    seat_count_per_row = int(parts[2])
+    movie = Movie(title)
+    seating_config = SeatingConfig(row_count, seat_count_per_row)
+    screening = Screening(datetime.now(), seating_config, movie, [])
+    
+    # Run the booking menu
     menu = BookingMenu(screening) # normally screening details would be pulled from a database
     menu.run()

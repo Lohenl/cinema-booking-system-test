@@ -1,4 +1,5 @@
 import re
+import time
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.validation import Validator, ValidationError
@@ -109,50 +110,59 @@ class BookingMenu:
             menu_choice = self.display_menu()
             match menu_choice:
                 case "1":
-                    # Prompt user for number of seats
-                    input_seats = self.prompt_seat_count()
-                    if input_seats.isdigit() and 1 <= int(input_seats) <= self.booker.seats_available:
-                        
-                        # Reserve number of seats
-                        seat_count = int(input_seats)
-                        print(f"\nBooking {seat_count} seats for {self.screening.movie.title}...")
-                        
-                        # Create a booking object and generate an id
-                        booking = self.booker.new_booking()
-                        
-                        self.booker.seats_available -= int(input_seats)
-                        print(f"\nSuccessfully reserved {input_seats} seats for {self.screening.movie.title} at {self.screening.start_time}.\nBooking ID: {booking.id} \n")
-                        
-                        # Prompt user to select seats
-                        selected_seats = None
-                        seat_input = None
-                        while True:
-                            
-                            if selected_seats is None:
-                                # Determine the default seat selection - rear and center
-                                selected_seats = self.booker.select_seats_from_center(seat_count, None)
-                            else:
-                                # Determine the seat selection based on user input
-                                selected_seats = self.booker.determine_seats_from_user_selection(seat_count, seat_input)
-                            
-                            # Display seating
-                            print(f"Selected Seats: {selected_seats}\n")
-                            self.seating_display.display(selected_seats)
-                            seat_input = self.prompt_seat_position()
-                            if seat_input.lower() == "confirm":
-                                # Add booking to screening when booking is successful
-                                # TODO: Update models and perform database transactions here
-                                booking.seats = selected_seats
-                                self.screening.booking_data.append(booking)
-                                print(f"\nBooking confirmed! Booking ID: {booking.id} Seats: {selected_seats}\n")
-                                break
-                            elif seat_input.lower() == "cancel":
-                                self.booker.seats_available += seat_count
-                                print("\nCancelling booking...")
-                                break
-                        
+                    
+                    if self.booker.seats_available == 0:
+                        print(f"Sorry, this screening has been fully booked.")
+                        time.sleep(2) # block the thread to make sure the user reads the message
+                    
                     else:
-                        print(f"\nSorry, there are only {self.booker.seats_available} seats available. Please try again.")
+                        # Prompt user for number of seats
+                        input_seats = self.prompt_seat_count()
+                        if input_seats.isdigit() and 1 <= int(input_seats) <= self.booker.seats_available:
+                            
+                            # Reserve number of seats
+                            seat_count = int(input_seats)
+                            print(f"\nBooking {seat_count} seats for {self.screening.movie.title}...")
+                            
+                            # Create a booking object and generate an id
+                            booking = self.booker.new_booking()
+                            
+                            self.booker.seats_available -= int(input_seats)
+                            print(f"\nSuccessfully reserved {input_seats} seats for {self.screening.movie.title} at {self.screening.start_time}.\nBooking ID: {booking.id} \n")
+                            
+                            # Prompt user to select seats
+                            selected_seats = None
+                            seat_input = None
+                            while True:
+                                
+                                if selected_seats is None:
+                                    # Determine the default seat selection - rear and center
+                                    selected_seats = self.booker.select_seats_from_center(seat_count, None)
+                                else:
+                                    # Determine the seat selection based on user input
+                                    selected_seats = self.booker.determine_seats_from_user_selection(seat_count, seat_input)
+                                
+                                # Preview seating selection
+                                print(f"Selected Seats: {selected_seats}\n")
+                                self.seating_display.display(selected_seats)
+                                
+                                # Prompt user to select a custom seat, confirm, or cancel
+                                seat_input = self.prompt_seat_position()
+                                if seat_input.lower() == "confirm":
+                                    # Update models and commit transactions
+                                    booking.seats = selected_seats
+                                    self.screening.booking_data.append(booking)
+                                    self.booker.save_booking(booking)
+                                    print(f"\nBooking confirmed! Booking ID: {booking.id} Seats: {selected_seats}\n")
+                                    break
+                                elif seat_input.lower() == "cancel":
+                                    self.booker.seats_available += seat_count
+                                    print("\nCancelling booking...")
+                                    break
+                                
+                        elif input_seats.isdigit() and int(input_seats) > self.booker.seats_available:
+                            print(f"Sorry, there are only {self.booker.seats_available} seats available. Please try again.")
+                            time.sleep(2) # block the thread to make sure the user reads the message
                         
                 case "2":
                     

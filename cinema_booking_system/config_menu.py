@@ -46,13 +46,14 @@ class ConfigMenuValidator(Validator):
 
 class ConfigMenu:
     def __init__(self):
-        self.options = ["Exit"]
+        self.options = ["WarCraft 10 10", "RuneScape 11 11"]
         self.completer = WordCompleter(self.options, ignore_case=True)
         self.validator = ConfigMenuValidator()
 
     def prompt_config(self):
         user_input = prompt(
-            "Please define movie title and seating map in [Title] [Row] [Seats Per Row] format.\n",
+            "Please define movie title and seating map in [Title] [Row] [Seats Per Row] format.\n"
+            "(Tip: Press tab for autocomplete)\n",
             completer = self.completer,
             validator = self.validator
         )
