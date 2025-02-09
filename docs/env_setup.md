@@ -14,7 +14,7 @@ Due to time constraints, just:
 
 1. Make sure the requirements are present and installed
 2. Follow the references to have Bash in VS Code
-3. Follow the references to set up a Python virtual environment in VS Code
+3. Follow the references to set up a Python **virtual environment** in VS Code (and nothing else)
 
 ## References
 
