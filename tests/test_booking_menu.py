@@ -1,6 +1,5 @@
-# tests/test_booking_menu.py
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from datetime import datetime
 from prompt_toolkit.document import Document
 from prompt_toolkit.validation import ValidationError
@@ -42,7 +41,7 @@ class TestBookingMenuValidator(unittest.TestCase):
     def test_invalid_inputs(self):
         """Test invalid seat selections."""
         invalid_inputs = [
-            "",             # Empty input
+            "",            # Empty input
             "X1",          # Invalid row
             "A11",         # Seat number too high
             "A0",          # Invalid seat number
@@ -52,7 +51,7 @@ class TestBookingMenuValidator(unittest.TestCase):
             "A1 B2",       # Invalid format
             "A1,B2",       # Invalid format
             "confirm ",    # Extra space
-            "A1 ",        # Extra space
+            "A1 ",         # Extra space
         ]
         
         for input_text in invalid_inputs:
@@ -71,12 +70,12 @@ class TestBookingMenuValidator(unittest.TestCase):
 class TestBookingMenu(unittest.TestCase):
     def setUp(self):
         """Set up test fixtures before each test."""
-        self.movie = Movie("Test Movie", 120)
+        self.movie = Movie("TestMovie")
         self.seating_config = SeatingConfig(5, 10)
         self.screening = Screening(
-            self.movie,
             datetime(2024, 1, 1, 12, 0),
             self.seating_config,
+            self.movie,
             []
         )
         self.menu = BookingMenu(self.screening)
@@ -84,56 +83,10 @@ class TestBookingMenu(unittest.TestCase):
     def test_initialization(self):
         """Test proper initialization of BookingMenu."""
         self.assertEqual(self.menu.screening, self.screening)
-        self.assertEqual(self.menu.total_seats, 50)  # 5 rows * 10 seats
-        self.assertEqual(self.menu.seats_available, 50)
         self.assertIsNotNone(self.menu.completer)
         self.assertIsNotNone(self.menu.validator)
         self.assertIsNotNone(self.menu.seating_display)
-
-    def test_is_seat_booked(self):
-        """Test seat booking status check."""
-        # Add a booking
-        booking = Booking("GIC0001", ["A1", "A2"])
-        self.screening.booking_data.append(booking)
-        
-        # Test booked seats
-        self.assertTrue(self.menu.is_seat_booked("A1"))
-        self.assertTrue(self.menu.is_seat_booked("A2"))
-        
-        # Test available seats
-        self.assertFalse(self.menu.is_seat_booked("A3"))
-        self.assertFalse(self.menu.is_seat_booked("B1"))
-
-    def test_select_seats_from_center(self):
-        """Test center-based seat selection algorithm."""
-        # Test with empty theater
-        seats = self.menu.select_seats_from_center(3, "A")
-        self.assertEqual(len(seats), 3)
-        
-        # Verify seats are in the same row and centered
-        row_letters = [seat[0] for seat in seats]
-        seat_numbers = [int(seat[1:]) for seat in seats]
-        
-        self.assertEqual(len(set(row_letters)), 1)  # All seats should be in same row
-        middle_seat = sum(seat_numbers) / len(seat_numbers)
-        self.assertAlmostEqual(middle_seat, 5.5, delta=2)  # Should be near center
-
-    def test_determine_seats_from_user_selection(self):
-        """Test user-selected seat allocation algorithm."""
-        # Test selection starting from A1
-        seats = self.menu.determine_seats_from_user_selection(3, "A1")
-        self.assertEqual(len(seats), 3)
-        self.assertIn("A1", seats)
-        self.assertIn("A2", seats)
-        self.assertIn("A3", seats)
-        
-        # Test with some seats already booked
-        booking = Booking("GIC0001", ["A1", "A2"])
-        self.screening.booking_data.append(booking)
-        seats = self.menu.determine_seats_from_user_selection(3, "A3")
-        self.assertEqual(len(seats), 3)
-        self.assertNotIn("A1", seats)
-        self.assertNotIn("A2", seats)
+        self.assertIsNotNone(self.menu.booker)
 
     @patch('cinema_booking_system.booking_menu.prompt')
     def test_display_menu(self, mock_prompt):
@@ -153,3 +106,5 @@ class TestBookingMenu(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+    
+# python3 -m unittest tests/test_booking_menu.py

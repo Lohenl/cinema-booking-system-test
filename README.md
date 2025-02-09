@@ -21,6 +21,7 @@ pip install -r requirements.txt
 - [ ] Default placement - Fix the little gaps
 - [x] User-specified Placement
 - [x] Unit Tests
-- [ ] End-to-End Tests
+- [x] End-to-End Tests
 - [x] Encapsulate a BookingController class
 - [ ] Stretch use case: The wrap-around
+- [ ] Stretch test cases: More test cases, more coverage

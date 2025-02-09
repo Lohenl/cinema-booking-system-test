@@ -55,12 +55,11 @@ class BookingMenuValidator(Validator):
 
 class BookingMenu:
     def __init__(self, screening: Screening):
-        self.screening = screening
         self.options = ["1", "2", "3"]
+        self.screening = screening
         self.completer = WordCompleter(self.options, ignore_case=True)
         self.validator = BookingMenuValidator(screening.seat_config, screening.booking_data)
         self.seating_display = SeatingDisplay(screening.seat_config, screening.booking_data)
-        self.seats_available = screening.seat_config.row_count * screening.seat_config.seat_count_per_row - len(screening.booking_data)
         self.booker = BookingController(screening)
         
     def display_menu(self):
