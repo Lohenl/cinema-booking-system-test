@@ -40,7 +40,7 @@ Design documentation can be found here: [Design Documentation](/docs/design.md)
 - [x] Unit Tests
 - [x] End-to-End Tests
 - [x] Encapsulate a BookingController class
-- [ ] Docs: Explain design
-- [ ] Docs: Assumptions made
+- [x] Docs: Explain design
+- [x] Docs: Assumptions made
 - [x] Stretch use case: The wrap-around
 - [ ] Stretch test cases: More test cases, more coverage
