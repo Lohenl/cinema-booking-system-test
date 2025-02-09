@@ -13,7 +13,7 @@ class TestConfigMenuValidator(unittest.TestCase):
         """Test valid input formats."""
         valid_inputs = [
             "Movie1 10 20",
-            # "The Movie 5 30", # In practice: TDD has raised an issue where the format raised in the brief doesn't specify if spaces are allowed; seek clarification
+            # "The Movie 5 30", # In practice: TDD has raised an issue where the format used in the brief doesn't specify if spaces are allowed; to seek clarification
             "Avatar 26 50",
             "exit",
             "EXIT",
