@@ -14,10 +14,10 @@ class BookingMenuValidator(Validator):
         self.booking_data = booking_data
     
     def validate(self, document):
-        text = document.text.strip()
+        text = document.text
         if not text:
             raise ValidationError(
-                message="Input cannot be empty. \nPlease select a seating position (e.g. A1, B2, C3), or enter 'confirm' to accept seat selection, or 'cancel' to cancel booking.",
+                message="Input cannot be empty. \nPlease select a seating position (e.g. A1, B2, C3), or enter 'confirm' to accept seat selection, or blank to cancel booking.",
                 cursor_position=len(text)  # Move cursor to the end
             )
         
@@ -55,9 +55,13 @@ class BookingMenuValidator(Validator):
 
 class BookingMenu:
     def __init__(self, screening: Screening):
-        self.options = ["1", "2", "3"]
         self.screening = screening
-        self.completer = WordCompleter(self.options, ignore_case=True)
+        self.menu_options = ["1", "2", "3"]
+        self.booking_select_options = ["Confirm", "Cancel"]
+        self.booking_check_options = ["GIC0001"]
+        self.menu_completer = WordCompleter(self.menu_options, ignore_case=True)
+        self.booking_select_completer = WordCompleter(self.booking_select_options, ignore_case=True)
+        self.booking_check_completer = WordCompleter(self.booking_check_options, ignore_case=True)
         self.validator = BookingMenuValidator(screening.seat_config, screening.booking_data)
         self.seating_display = SeatingDisplay(screening.seat_config, screening.booking_data)
         self.booker = BookingController(screening)
@@ -70,9 +74,8 @@ class BookingMenu:
             "[2] Check Bookings\n"
             "[3] Exit\n"
             "\n"
-            "Please enter your selection (Press Tab to view available options):\n"
-            "\n",
-            completer=self.completer
+            "Please enter your selection (Press Tab to view available options): ",
+            completer=self.menu_completer
         )
         return user_input
     
@@ -84,10 +87,22 @@ class BookingMenu:
     
     def prompt_seat_position(self):
         user_input = prompt(
-            f"\nEnter 'confirm' to accept seat selection, or select a seating position (e.g. A1, B2, C3), or enter 'cancel' to cancel booking:\nSeat: ",
+            f"\nEnter 'confirm' to accept seat selection, or select a seating position (e.g. A1, B2, C3), or enter 'cancel' to cancel booking:\n"
+            "(Hint: Press tab to show options)\n"
+            "Seat: ",
+            completer = self.booking_select_completer,
             validator = self.validator
         )
         return user_input
+
+    def prompt_booking_id(self):
+        booking_id = prompt(
+            "Enter booking ID to check booking details, or enter blank to go back to the main menu.\n"
+            "Hint: Press tab for an example ID\n"
+            "Booking ID: ",
+            completer = self.booking_check_completer,
+        )
+        return booking_id
 
     def run(self):
         while True:
@@ -142,8 +157,7 @@ class BookingMenu:
                 case "2":
                     
                     while True:
-                        print("Enter booking ID to check booking details, or enter blank to go back to the main menu.")
-                        booking_id = prompt("Booking ID: ")
+                        booking_id = self.prompt_booking_id()
                         
                         if booking_id:
                             booking = next((booking for booking in self.screening.booking_data if booking.id == booking_id), None)

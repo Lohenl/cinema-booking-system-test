@@ -83,7 +83,7 @@ class TestBookingMenu(unittest.TestCase):
     def test_initialization(self):
         """Test proper initialization of BookingMenu."""
         self.assertEqual(self.menu.screening, self.screening)
-        self.assertIsNotNone(self.menu.completer)
+        self.assertIsNotNone(self.menu.menu_completer)
         self.assertIsNotNone(self.menu.validator)
         self.assertIsNotNone(self.menu.seating_display)
         self.assertIsNotNone(self.menu.booker)
