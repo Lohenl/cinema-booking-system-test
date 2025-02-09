@@ -36,7 +36,7 @@ class BookingController:
         current_row = starting_row
         seats_needed = seat_count
         
-        print(f"starting_row: {starting_row}, current_row:{current_row}, seats_needed:{seats_needed}")
+        # print(f"starting_row: {starting_row}, current_row:{current_row}, seats_needed:{seats_needed}")
         
         while seats_needed > 0:
             # For each row, start from center and expand outwards
@@ -46,7 +46,7 @@ class BookingController:
             
             while len(row_seats) < min(seats_per_row, seats_needed):
                 
-                print(f"row_seats: {row_seats}")
+                # print(f"row_seats: {row_seats}")
                 
                 # Try center-left seat
                 if left_ptr >= 0:
@@ -54,7 +54,7 @@ class BookingController:
                     if not self.is_seat_booked(seat_str) and seat_str not in selected_seats:
                         row_seats.append(seat_str)
                     left_ptr -= 1
-                    print(f"left_ptr: {left_ptr}")
+                    # print(f"left_ptr: {left_ptr}")
                 
                 # If we still need seats, try center-right seat
                 if len(row_seats) < min(seats_per_row, seats_needed) and right_ptr < seats_per_row:
@@ -62,11 +62,11 @@ class BookingController:
                     if not self.is_seat_booked(seat_str) and seat_str not in selected_seats:
                         row_seats.append(seat_str)
                     right_ptr += 1
-                    print(f"right_ptr: {right_ptr}")
+                    # print(f"right_ptr: {right_ptr}")
                     
                 # Skip to the next row if both pointers reached the end (the row is full)
                 if (left_ptr < 0) and (right_ptr == seats_per_row):
-                    print(f"Row {current_row} is full, unable to assign more seats")
+                    # print(f"Row {current_row} is full, unable to assign more seats")
                     break
             
             # Add the seats found in this row to our selection
@@ -75,7 +75,7 @@ class BookingController:
             
             # Move to next row if we still need more seats
             if seats_needed > 0:
-                print(f"selected_seats: {selected_seats}, seats_needed: {seats_needed}")
+                # print(f"selected_seats: {selected_seats}, seats_needed: {seats_needed}")
                 current_row = chr(ord(current_row) + 1)
                 
                 # Wrap around to the last row again if the front row of the cinema has been reached
