@@ -83,7 +83,7 @@ class TestConfigMenu(unittest.TestCase):
         """Test proper initialization of ConfigMenu."""
         self.assertIsNotNone(self.config_menu.completer)
         self.assertIsNotNone(self.config_menu.validator)
-        self.assertEqual(self.config_menu.options, ["Exit"])
+        self.assertEqual(self.config_menu.options, ["WarCraft 10 10", "RuneScape 11 11"])
 
     @patch('cinema_booking_system.config_menu.prompt')
     def test_prompt_config(self, mock_prompt):
@@ -95,7 +95,7 @@ class TestConfigMenu(unittest.TestCase):
         
         # Verify prompt was called with correct arguments
         mock_prompt.assert_called_with(
-            "Please define movie title and seating map in [Title] [Row] [Seats Per Row] format.\n",
+            "Please define movie title and seating map in [Title] [Row] [Seats Per Row] format.\n(Tip: Press tab for autocomplete)\n",
             completer=self.config_menu.completer,
             validator=self.config_menu.validator
         )
