@@ -28,7 +28,7 @@ class SeatingDisplay:
         self._booking_data = value
     
     def display(self, selected_seats: List[str] = []):
-        # Calculate the total length of the HR line
+        # Calculate the total length of the horizontal rule
         hr_length = self.seating_config.seat_count_per_row * 3 + 1
         
         # Calculate the length of the "SCREEN" text
@@ -42,7 +42,7 @@ class SeatingDisplay:
         # Print the screen
         print(f"{screen_whitespace}{screen_text}{screen_whitespace}")
         
-        # Print the HR line
+        # Print the horizontal rule
         hr_string = "-" * hr_length
         print(hr_string)
         
